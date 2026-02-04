@@ -235,17 +235,10 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ---
 
-## 📄 **License**
-
-This project is open-source and available under the [MIT License](LICENSE).
-
----
 
 ## 👨‍💻 **Author**
 
 **Abhay**  
-- GitHub: [@yourusername](https://github.com/yourusername)
-- LinkedIn: [Your Name](https://linkedin.com/in/yourprofile)
 
 ---
 
@@ -257,15 +250,5 @@ This project is open-source and available under the [MIT License](LICENSE).
 
 ---
 
-<div align="center">
-  
-### **⭐ Star this repo if you found it helpful!**
-
-[![GitHub stars](https://img.shields.io/github/stars/yourusername/video-call-app?style=social)](https://github.com/yourusername/video-call-app/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/yourusername/video-call-app?style=social)](https://github.com/yourusername/video-call-app/network/members)
-
-</div>
-
----
 
 > **Note**: This project is for educational purposes and demonstrates the implementation of real-time video calling features using modern web technologies.
