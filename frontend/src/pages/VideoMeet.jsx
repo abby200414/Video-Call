@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import io from "socket.io-client";
-import { Badge, IconButton, TextField } from '@mui/material';
-import { Button } from '@mui/material';
+import { Badge, IconButton } from '@mui/material';
 import VideocamIcon from '@mui/icons-material/Videocam';
 import VideocamOffIcon from '@mui/icons-material/VideocamOff'
 import styles from"../styles/videoComponent.module.css";
@@ -50,7 +49,7 @@ export default function VideoMeetComponent() {
 
     let [message, setMessage] = useState("");
 
-    let [newMessages, setNewMessages] = useState(3);
+    let [newMessages, setNewMessages] = useState(0);
 
     let [askForUsername, setAskForUsername] = useState(true);
 
@@ -448,23 +447,158 @@ export default function VideoMeetComponent() {
     }
 
 
+    const lobbyStyles = {
+        page: {
+            minHeight: '100vh',
+            background: '#080810',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontFamily: "'Inter', sans-serif",
+        },
+        card: {
+            background: '#12121a',
+            border: '1px solid rgba(255,255,255,0.08)',
+            borderRadius: '20px',
+            padding: '2.5rem',
+            width: '100%',
+            maxWidth: '420px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '1.2rem',
+            boxShadow: '0 24px 64px rgba(0,0,0,0.6)',
+            animation: 'fadeIn 0.4s ease',
+        },
+        logoRow: {
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            marginBottom: '0.5rem',
+        },
+        logoIcon: {
+            width: 36,
+            height: 36,
+            borderRadius: 8,
+            background: 'linear-gradient(135deg,#6366f1,#818cf8)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '1.1rem',
+        },
+        logoText: {
+            fontSize: '1.1rem',
+            fontWeight: '700',
+            background: 'linear-gradient(135deg,#6366f1,#a78bfa,#38bdf8)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+        },
+        title: {
+            fontSize: '1.6rem',
+            fontWeight: '800',
+            color: '#f1f5f9',
+            letterSpacing: '-0.02em',
+        },
+        subtitle: {
+            fontSize: '0.9rem',
+            color: '#64748b',
+            marginTop: '-0.5rem',
+        },
+        videoPreview: {
+            width: '100%',
+            borderRadius: '14px',
+            overflow: 'hidden',
+            position: 'relative',
+            background: '#0a0a12',
+            border: '1px solid rgba(99,102,241,0.3)',
+            aspectRatio: '16/9',
+        },
+        video: {
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            display: 'block',
+        },
+        videoOverlay: {
+            position: 'absolute',
+            bottom: '8px',
+            right: '10px',
+            background: 'rgba(0,0,0,0.5)',
+            color: 'rgba(255,255,255,0.7)',
+            fontSize: '0.7rem',
+            padding: '2px 8px',
+            borderRadius: '4px',
+        },
+        inputRow: {
+            display: 'flex',
+            gap: '0.5rem',
+        },
+        input: {
+            flex: 1,
+            padding: '0.7rem 1rem',
+            borderRadius: '10px',
+            background: 'rgba(255,255,255,0.04)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            color: '#f1f5f9',
+            fontFamily: "'Inter', sans-serif",
+            fontSize: '0.9rem',
+            outline: 'none',
+            transition: 'all 0.2s ease',
+        },
+        connectBtn: {
+            padding: '0.7rem 1.2rem',
+            borderRadius: '10px',
+            background: 'linear-gradient(135deg,#6366f1,#818cf8)',
+            border: 'none',
+            color: 'white',
+            fontFamily: "'Inter', sans-serif",
+            fontWeight: '600',
+            fontSize: '0.9rem',
+            transition: 'all 0.2s ease',
+            boxShadow: '0 4px 16px rgba(99,102,241,0.3)',
+            whiteSpace: 'nowrap',
+        },
+    };
+
     return (
         <div>
 
             {askForUsername === true ?
 
-                <div>
+                <div style={lobbyStyles.page}>
+                    <div style={lobbyStyles.card}>
+                        <div style={lobbyStyles.logoRow}>
+                            <span style={lobbyStyles.logoIcon}>🎥</span>
+                            <span style={lobbyStyles.logoText}>ConnectNow</span>
+                        </div>
+                        <h1 style={lobbyStyles.title}>Join the Meeting</h1>
+                        <p style={lobbyStyles.subtitle}>Enter your display name to continue</p>
 
+                        <div style={lobbyStyles.videoPreview}>
+                            <video ref={localVideoref} autoPlay muted style={lobbyStyles.video}></video>
+                            <div style={lobbyStyles.videoOverlay}>Preview</div>
+                        </div>
 
-                    <h2>Enter into Lobby </h2>
-                    <TextField id="outlined-basic" label="Username" value={username} onChange={e => setUsername(e.target.value)} variant="outlined" />
-                    <Button variant="contained" onClick={connect}>Connect</Button>
-
-
-                    <div>
-                        <video ref={localVideoref} autoPlay muted></video>
+                        <div style={lobbyStyles.inputRow}>
+                            <input
+                                style={lobbyStyles.input}
+                                placeholder="Your display name..."
+                                value={username}
+                                onChange={e => setUsername(e.target.value)}
+                                onKeyDown={e => e.key === 'Enter' && username.trim() && connect()}
+                                onFocus={e => { e.target.style.borderColor='#6366f1'; e.target.style.boxShadow='0 0 0 3px rgba(99,102,241,0.2)'; }}
+                                onBlur={e => { e.target.style.borderColor='rgba(255,255,255,0.1)'; e.target.style.boxShadow='none'; }}
+                            />
+                            <button
+                                style={{ ...lobbyStyles.connectBtn, opacity: username.trim() ? 1 : 0.5, cursor: username.trim() ? 'pointer' : 'not-allowed' }}
+                                onClick={connect}
+                                disabled={!username.trim()}
+                            >
+                                Join →
+                            </button>
+                        </div>
                     </div>
-
+                    <style>{`@keyframes fadeIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }`}</style>
                 </div> :
 
 
@@ -473,29 +607,34 @@ export default function VideoMeetComponent() {
                     {showModal ? <div className={styles.chatRoom}>
 
                         <div className={styles.chatContainer}>
-                            <h1>Chat</h1>
+                            <div className={styles.chatHeader}>
+                                <h2>Chat</h2>
+                            </div>
 
                             <div className={styles.chattingDisplay}>
-
-                                {messages.length !== 0 ? messages.map((item, index) => {
-
-                                    console.log(messages)
-                                    return (
-                                        <div style={{ marginBottom: "20px" }} key={index}>
-                                            <p style={{ fontWeight: "bold" }}>{item.sender}</p>
-                                            <p>{item.data}</p>
-                                        </div>
-                                    )
-                                }) : <p>No Messages Yet</p>}
-
-
+                                {messages.length !== 0 ? messages.map((item, index) => (
+                                    <div className={styles.chatMessage} key={index}>
+                                        <p className={styles.chatSender}>{item.sender}</p>
+                                        <p className={styles.chatText}>{item.data}</p>
+                                    </div>
+                                )) : (
+                                    <div className={styles.emptyChat}>
+                                        <span style={{ fontSize: '2rem' }}>💬</span>
+                                        <span>No messages yet</span>
+                                    </div>
+                                )}
                             </div>
 
                             <div className={styles.chattingArea}>
-                                <TextField value={message} onChange={(e) => setMessage(e.target.value)} id="outlined-basic" label="Enter Your chat" variant="outlined" />
-                                <Button variant='contained' onClick={sendMessage}>Send</Button>
+                                <input
+                                    className={styles.chatInput}
+                                    value={message}
+                                    onChange={(e) => setMessage(e.target.value)}
+                                    placeholder="Type a message..."
+                                    onKeyDown={(e) => e.key === 'Enter' && message.trim() && sendMessage()}
+                                />
+                                <button className={styles.sendBtn} onClick={sendMessage}>Send</button>
                             </div>
-
 
                         </div>
                     </div> : <></>}
