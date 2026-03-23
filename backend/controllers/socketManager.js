@@ -51,6 +51,26 @@ export const connectToSocket = (server) => {
       io.to(toId).emit("signal", socket.id, message);
     });
 
+    // Broadcast a participant's display name to everyone in their room
+    socket.on("participant-name", (socketId, name) => {
+      const [matchingRoom, found] = Object.entries(connections).reduce(
+        ([room, isFound], [roomKey, roomValue]) => {
+          if (!isFound && roomValue.includes(socket.id)) {
+            return [roomKey, true];
+          }
+          return [room, isFound];
+        },
+        ["", false],
+      );
+      if (found) {
+        connections[matchingRoom].forEach((elem) => {
+          if (elem !== socket.id) {
+            io.to(elem).emit("participant-name", socket.id, name);
+          }
+        });
+      }
+    });
+
     socket.on("chat-message", (data, sender) => {
       const [matchingRoom, found] = Object.entries(connections).reduce(
         ([room, isFound], [roomKey, roomValue]) => {

@@ -1,10 +1,10 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import withAuth from '../utils/withAuth'
 import { useNavigate } from 'react-router-dom'
 import "../App.css";
 import RestoreIcon from '@mui/icons-material/Restore';
 import VideocamIcon from '@mui/icons-material/Videocam';
-import { IconButton } from '@mui/material';
+import HomeIcon from '@mui/icons-material/Home';
 import { AuthContext } from '../contexts/AuthContext';
 import ThemeToggle from '../components/ThemeToggle';
 
@@ -13,6 +13,18 @@ function HomeComponent() {
     const [meetingCode, setMeetingCode] = useState("");
 
     const { addToUserHistory } = useContext(AuthContext);
+
+    // Ctrl+H shortcut — navigate to /home (useful from other pages too)
+    useEffect(() => {
+        const handleKey = (e) => {
+            if (e.ctrlKey && e.key === 'h') {
+                e.preventDefault();
+                navigate('/home');
+            }
+        };
+        window.addEventListener('keydown', handleKey);
+        return () => window.removeEventListener('keydown', handleKey);
+    }, [navigate]);
 
     let handleJoinVideoCall = async () => {
         if (!meetingCode.trim()) return;
@@ -33,21 +45,48 @@ function HomeComponent() {
     return (
         <>
             <div className="navBar">
-                <div className="navLogo">
-                    <div className="logoIcon" style={{ width: 32, height: 32, borderRadius: 8, background: 'linear-gradient(135deg,#6366f1,#818cf8)', display:'flex', alignItems:'center', justifyContent:'center', fontSize: '1rem' }}>🎥</div>
+                {/* Logo — clicking navigates home */}
+                <div
+                    className="navLogo"
+                    onClick={() => navigate('/home')}
+                    style={{ cursor: 'pointer' }}
+                    title="Home (Ctrl+H)"
+                >
+                    <div
+                        className="logoIcon"
+                        style={{
+                            width: 34, height: 34, borderRadius: 9,
+                            background: 'linear-gradient(135deg,#5b21b6,#7c3aed)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontSize: '1rem',
+                            boxShadow: '0 0 16px rgba(124,58,237,0.5)',
+                        }}
+                    >🎥</div>
                     <h2>ConnectNow</h2>
                 </div>
+
                 <div className="navActions">
                     <ThemeToggle />
-                    <IconButton
+
+                    {/* Visible Home button */}
+                    <button
+                        className="homeBtn"
+                        title="Home (Ctrl+H)"
+                        onClick={() => navigate('/home')}
+                    >
+                        <HomeIcon fontSize="small" />
+                        Home
+                    </button>
+
+                    <button
                         className="iconBtn"
                         title="Meeting History"
                         onClick={() => navigate("/history")}
-                        sx={{ color: 'var(--text-secondary)', border: '1px solid var(--border)', borderRadius: '8px', padding: '6px' }}
+                        style={{ borderRadius: '8px', padding: '7px' }}
                     >
                         <RestoreIcon fontSize="small" />
-                    </IconButton>
-                    <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginLeft: '-4px' }}>History</span>
+                    </button>
+                    <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginLeft: '-6px' }}>History</span>
 
                     <button className="logoutBtn" onClick={() => {
                         localStorage.removeItem("token");
@@ -81,7 +120,7 @@ function HomeComponent() {
 
                     {/* Join Meeting Card */}
                     <div className="meetCard">
-                        <div className="cardIcon" style={{ background: 'rgba(167,139,250,0.1)', color: 'var(--accent)' }}>
+                        <div className="cardIcon" style={{ background: 'rgba(212,168,67,0.1)', color: '#d4a843', border: '1px solid rgba(212,168,67,0.2)' }}>
                             🔗
                         </div>
                         <div>
@@ -106,6 +145,11 @@ function HomeComponent() {
                         </div>
                     </div>
                 </div>
+
+                {/* Keyboard shortcut hint */}
+                <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '-0.5rem' }}>
+                    Tip: Press <kbd style={{ background: 'rgba(124,58,237,0.15)', border: '1px solid rgba(124,58,237,0.25)', borderRadius: '4px', padding: '1px 6px', fontFamily: 'monospace', color: 'var(--primary-hover)' }}>Ctrl+H</kbd> to return here from anywhere
+                </p>
             </div>
         </>
     );
